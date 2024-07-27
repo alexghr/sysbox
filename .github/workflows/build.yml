@@ -8,15 +8,12 @@ on:
     inputs: {}
 
 env:
-  REPO: "AztecProtocol/aztec-packages"
-  REF: "master"
   REGISTRY: ghcr.io
-  AZTEC_IMAGE_NAME: aztecprotocol/sysbox
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
@@ -36,16 +33,7 @@ jobs:
           version: "0.8.9"
 
       - uses: actions/checkout@v4
-        with:
-          repository: ${{ env.REPO }}
-          ref: ${{ env.REF }}
-          fetch-depth: 0
       
       - name: Build sysbox
-        working-directory: ./build-images
-        run: earthly +sysbox
-
-      - name: Push sysbox
         run: |
-          docker tag ${{ env.AZTEC_IMAGE_NAME }} ${{ env.REGISTRY }}/${{ env.AZTEC_IMAGE_NAME }}
-          docker push ${{ env.REGISTRY }}/${{ env.AZTEC_IMAGE_NAME }}
+          earthly --ci --push +alexghr-sysbox --registry ${{ env.REGISTRY }} --image ${{ env.IMAGE_NAME }}
