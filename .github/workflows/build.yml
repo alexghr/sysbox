@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs: {}
+
+env:
+  REPO: "AztecProtocol/aztec-packages"
+  REF: "master"
+  REGISTRY: ghcr.io
+  AZTEC_IMAGE_NAME: aztecprotocol/sysbox
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: earthly/actions-setup@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: "0.8.9"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REPO }}
+          ref: ${{ env.REF }}
+          fetch-depth: 0
+      
+      - name: Build sysbox
+        working-directory: ./build-images
+        run: earthly +sysbox
+
+      - name: Push sysbox
+        run: |
+          docker tag ${{ env.AZTEC_IMAGE_NAME }} ${{ env.REGISTRY }}/${{ env.AZTEC_IMAGE_NAME }}
+          docker push ${{ env.REGISTRY }}/${{ env.AZTEC_IMAGE_NAME }}
