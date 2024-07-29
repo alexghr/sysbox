@@ -14,14 +14,22 @@ alexghr-sysbox:
     bat \
     ripgrep
 
-  ENV AZTEC_HOME /home/ubuntu
-  RUN mkdir -p $AZTEC_HOME/.local/bin $AZTEC_HOME/.config && \
+  ENV USER_HOME /home/ubuntu
+  RUN mkdir -p $USER_HOME/.ssh && curl -o $USER_HOME/.ssh/authorized_keys  https://github.com/alexghr.keys
+
+  RUN mkdir -p /etc/systemd/system/ssh.socket.d && \
+    echo "[Socket]" > /etc/systemd/system/ssh.socket.d/override.conf && \
+    echo "ListenStream=" >> /etc/systemd/system/ssh.socket.d/override.conf && \
+    echo "ListenStream=2222" >> /etc/systemd/system/ssh.socket.d/override.conf
+
+  RUN curl -fsSL https://tailscale.com/install.sh | sh
+
+  RUN mkdir -p $USER_HOME/.local/bin $USER_HOME/.config && \
     curl -sS  https://starship.rs/install.sh > /tmp/starship.sh && \
     chmod +x /tmp/starship.sh && \
-    /tmp/starship.sh --bin-dir $AZTEC_HOME/.local/bin --yes && \
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> $AZTEC_HOME/.bashrc && \
-    echo 'eval "$(starship init bash)"' >> $AZTEC_HOME/.bashrc && \
-    $AZTEC_HOME/.local/bin/starship preset pure-preset -o $AZTEC_HOME/.config/starship.toml && \
-    echo "add_newline = false" >> $AZTEC_HOME/.config/starship.toml
+    /tmp/starship.sh --bin-dir $USER_HOME/.local/bin --yes && \
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> $USER_HOME/.bashrc && \
+    echo 'eval "$(starship init bash)"' >> $USER_HOME/.bashrc && \
+    $USER_HOME/.local/bin/starship preset pure-preset -o $USER_HOME/.config/starship.toml
 
   SAVE IMAGE --push $registry/$image:latest
