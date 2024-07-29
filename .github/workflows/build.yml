@@ -10,6 +10,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  CACHE: ${{ github.repository }}-cache
 
 jobs:
   build:
@@ -36,4 +37,4 @@ jobs:
       
       - name: Build sysbox
         run: |
-          earthly --ci --push +alexghr-sysbox --registry ${{ env.REGISTRY }} --image ${{ env.IMAGE_NAME }}
+          earthly --ci --push --remote-cache ${{ env.REGISTRY }}/${{ env.CACHE }} +alexghr-sysbox --registry ${{ env.REGISTRY }} --image ${{ env.IMAGE_NAME }}
