@@ -14,9 +14,6 @@ alexghr-sysbox:
     bat \
     ripgrep
 
-  ENV USER_HOME /home/ubuntu
-  RUN mkdir -p $USER_HOME/.ssh && curl -o $USER_HOME/.ssh/authorized_keys  https://github.com/alexghr.keys
-
   RUN mkdir -p /etc/systemd/system/ssh.socket.d && \
     echo "[Socket]" > /etc/systemd/system/ssh.socket.d/override.conf && \
     echo "ListenStream=" >> /etc/systemd/system/ssh.socket.d/override.conf && \
@@ -24,12 +21,23 @@ alexghr-sysbox:
 
   RUN curl -fsSL https://tailscale.com/install.sh | sh
 
-  RUN mkdir -p $USER_HOME/.local/bin $USER_HOME/.config && \
+  USER ubuntu
+
+  RUN mkdir -p $HOME/.ssh && curl -o $HOME/.ssh/authorized_keys  https://github.com/alexghr.keys
+
+  RUN mkdir ~/.npm-global && npm config set prefix '~/.npm-global'
+
+  RUN mkdir -p $HOME/.local/bin $HOME/.config && \
     curl -sS  https://starship.rs/install.sh > /tmp/starship.sh && \
     chmod +x /tmp/starship.sh && \
-    /tmp/starship.sh --bin-dir $USER_HOME/.local/bin --yes && \
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> $USER_HOME/.bashrc && \
-    echo 'eval "$(starship init bash)"' >> $USER_HOME/.bashrc && \
-    $USER_HOME/.local/bin/starship preset pure-preset -o $USER_HOME/.config/starship.toml
+    /tmp/starship.sh --bin-dir $HOME/.local/bin --yes && \
+    echo 'eval "$(starship init bash)"' >> $HOME/.bashrc && \
+    $HOME/.local/bin/starship preset pure-preset -o $HOME/.config/starship.toml
+
+  RUN echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.bashrc && \
+    echo 'export PATH=$HOME/.cargo/bin:$PATH' >> ~/.bashrc && \
+    echo 'export PATH=$HOME/.aztec/bin:$PATH' >> ~/.bashrc && \
+    echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
+    
 
   SAVE IMAGE --push $registry/$image:latest
