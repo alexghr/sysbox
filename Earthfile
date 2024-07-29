@@ -14,7 +14,7 @@ alexghr-sysbox:
     bat \
     ripgrep
 
-  ENV AZTEC_HOME /home/aztec-dev
+  ENV AZTEC_HOME /home/ubuntu
   RUN mkdir -p $AZTEC_HOME/.local/bin $AZTEC_HOME/.config && \
     curl -sS  https://starship.rs/install.sh > /tmp/starship.sh && \
     chmod +x /tmp/starship.sh && \
