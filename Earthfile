@@ -11,33 +11,35 @@ alexghr-sysbox:
     bash-completion \
     less \
     inotify-tools \
-    bat \
-    ripgrep
 
   RUN mkdir -p /etc/systemd/system/ssh.socket.d && \
     echo "[Socket]" > /etc/systemd/system/ssh.socket.d/override.conf && \
     echo "ListenStream=" >> /etc/systemd/system/ssh.socket.d/override.conf && \
-    echo "ListenStream=2222" >> /etc/systemd/system/ssh.socket.d/override.conf
+    echo "ListenStream=2222" >> /etc/systemd/system/ssh.socket.d/override.conf && \
+    echo "StreamLocalBindUnlink yes" > /etc/ssh/sshd_config.d/gpg-agent.conf && \
 
   RUN curl -fsSL https://tailscale.com/install.sh | sh
+  
+  RUN cargo --locked install \
+    starship \
+    zoxide \
+    ripgrep \
+    bat \
+    fzf \
+    eza
 
   USER ubuntu
 
-  RUN mkdir -p $HOME/.ssh && curl -o $HOME/.ssh/authorized_keys  https://github.com/alexghr.keys
+  RUN mkdir -p $HOME/{.ssh,.local/bin,.config,.npm-global} && \
+    npm config set prefix '$HOME/.npm-global' && \
+    starship preset pure-preset -o $HOME/.config/starship.toml
 
-  RUN mkdir ~/.npm-global && npm config set prefix '~/.npm-global'
+  COPY --chown=ubuntu:ubuntu .bashrc_extra $HOME/.bashrc_extra
+  # https://medium.com/@sergiu.savva/simplify-your-aws-cli-experience-with-mfa-a-handy-bash-script-940d8517ad4d
+  COPY --chown=ubuntu:ubuntu awsmfa $HOME/.local/bin/awsmfa
+  RUN echo 'source $HOME/.bashrc_extra' >> $HOME/.bashrc
 
-  RUN mkdir -p $HOME/.local/bin $HOME/.config && \
-    curl -sS  https://starship.rs/install.sh > /tmp/starship.sh && \
-    chmod +x /tmp/starship.sh && \
-    /tmp/starship.sh --bin-dir $HOME/.local/bin --yes && \
-    echo 'eval "$(starship init bash)"' >> $HOME/.bashrc && \
-    $HOME/.local/bin/starship preset pure-preset -o $HOME/.config/starship.toml
 
-  RUN echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.bashrc && \
-    echo 'export PATH=$HOME/.cargo/bin:$PATH' >> ~/.bashrc && \
-    echo 'export PATH=$HOME/.aztec/bin:$PATH' >> ~/.bashrc && \
-    echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
-    
+  RUN curl -o $HOME/.ssh/authorized_keys  https://github.com/alexghr.keys
 
   SAVE IMAGE --push $registry/$image:latest

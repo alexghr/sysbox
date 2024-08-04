@@ -1,0 +1,20 @@
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+function fixssh() {
+  eval $(tmux show-env -s |grep '^SSH_')
+}
+
+function fixgpg() {
+  gpgconf --kill gpg-agent
+  ln -f /run/user/1000/gnupg/S.gpg-agent.fwd /run/user/1000/gnupg/S.gpg-agent
+  gpgconf --launch gpg-agent
+}
+
+export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/.aztec/bin:$PATH"
+
+eval "$(zoxide init --cmd cd bash)"
+eval "$(starship init bash)"
