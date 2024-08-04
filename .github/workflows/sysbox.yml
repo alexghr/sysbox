@@ -36,5 +36,5 @@ jobs:
       - name: Build sysbox
         run: |
           # populate the cache
-          # docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/sysbox:latest
-          earthly --ci --push +sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/sysbox:latest
+          earthly --ci --use-inline-cache --save-inline-cache --push +sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
