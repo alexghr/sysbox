@@ -1,0 +1,38 @@
+name: Build base sysbox image
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' 
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: earthly/actions-setup@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: "0.8.9"
+
+      - uses: actions/checkout@v4
+      
+      - name: Build base sysbox
+        run: |
+          # populate the cache in case there are no changes
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/base-sysbox:latest
+          earthly --ci --push +base-sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}

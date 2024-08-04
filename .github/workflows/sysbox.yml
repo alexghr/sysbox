@@ -1,4 +1,4 @@
-name: Build
+name: Build sysbox
 
 on:
   push:
@@ -9,8 +9,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  CACHE: ${{ github.repository }}-cache
 
 jobs:
   build:
@@ -37,4 +35,6 @@ jobs:
       
       - name: Build sysbox
         run: |
-          earthly --ci --push --remote-cache ${{ env.REGISTRY }}/${{ env.CACHE }} +alexghr-sysbox --registry ${{ env.REGISTRY }} --image ${{ env.IMAGE_NAME }}
+          # populate the cache
+          # docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/sysbox:latest
+          earthly --ci --push +sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
