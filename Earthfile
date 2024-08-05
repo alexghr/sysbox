@@ -26,7 +26,11 @@ sysbox:
 
   USER ubuntu
 
-  RUN mkdir -p $HOME/{.ssh,.local/bin,.config,.npm-global} && \
+  COPY .bashrc_extra $HOME/.bashrc_extra
+  # https://medium.com/@sergiu.savva/simplify-your-aws-cli-experience-with-mfa-a-handy-bash-script-940d8517ad4d
+  COPY awsmfa $HOME/.local/bin/awsmfa
+
+  RUN mkdir -p $HOME/.npm-global && \
     npm config set prefix '$HOME/.npm-global'
   
   # can't install starship with cargo because rustc versions
@@ -36,13 +40,15 @@ sysbox:
     /tmp/starship.sh --bin-dir $HOME/.local/bin --yes && \
     $HOME/.local/bin/starship preset pure-preset -o $HOME/.config/starship.toml
 
-  COPY --chown=ubuntu:ubuntu .bashrc_extra $HOME/.bashrc_extra
-  # https://medium.com/@sergiu.savva/simplify-your-aws-cli-experience-with-mfa-a-handy-bash-script-940d8517ad4d
-  COPY --chown=ubuntu:ubuntu awsmfa $HOME/.local/bin/awsmfa
+  RUN mkdir -p $HOME/.config/git $HOME/.config/tmux $HOME/.ssh && \
+    curl -o $HOME/.ssh/authorized_keys  https://github.com/alexghr.keys && \
+    curl -o $HOME/.config/git/config https://raw.githubusercontent.com/alexghr/nix/refactor/flake.parts/hosts/palpatine/ag/config/gitconfig && \
+    curl -o $HOME/.config/tmux/tmux.conf https://raw.githubusercontent.com/alexghr/nix/refactor/flake.parts/hosts/palpatine/ag/config/tmux.conf
+
   RUN echo 'source $HOME/.bashrc_extra' >> $HOME/.bashrc
 
-
-  RUN curl -o $HOME/.ssh/authorized_keys  https://github.com/alexghr.keys
+  # switch back to root so that systemd can start
+  USER root
 
   SAVE IMAGE --push $registry/sysbox:latest
 
