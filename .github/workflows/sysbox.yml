@@ -6,6 +6,11 @@ on:
       - main
   workflow_dispatch:
     inputs: {}
+  workflow_run:
+    workflows:
+      - Build base sysbox
+    types:
+      - completed
 
 env:
   REGISTRY: ghcr.io
@@ -13,6 +18,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
       packages: write
@@ -35,6 +41,4 @@ jobs:
       
       - name: Build sysbox
         run: |
-          # populate the cache
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/sysbox:latest
           earthly --ci --use-inline-cache --save-inline-cache --push +sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}

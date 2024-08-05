@@ -1,4 +1,4 @@
-name: Build base sysbox image
+name: Build base sysbox
 
 on:
   schedule:
@@ -33,6 +33,4 @@ jobs:
       
       - name: Build base sysbox
         run: |
-          # populate the cache in case there are no changes
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/base-sysbox:latest
           earthly --ci --use-inline-cache --save-inline-cache --push +base-sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
