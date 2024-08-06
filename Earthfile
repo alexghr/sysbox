@@ -8,13 +8,14 @@ sysbox:
     bash-completion \
     less \
     inotify-tools \
-    fzf
+    fzf \
+    btop
 
   RUN mkdir -p /etc/systemd/system/ssh.socket.d && \
     echo "[Socket]" > /etc/systemd/system/ssh.socket.d/override.conf && \
     echo "ListenStream=" >> /etc/systemd/system/ssh.socket.d/override.conf && \
     echo "ListenStream=2222" >> /etc/systemd/system/ssh.socket.d/override.conf && \
-    echo "StreamLocalBindUnlink yes" > /etc/ssh/sshd_config.d/gpg-agent.conf && \
+    echo "StreamLocalBindUnlink yes" > /etc/ssh/sshd_config.d/gpg-agent.conf
 
   RUN curl -fsSL https://tailscale.com/install.sh | sh
   
