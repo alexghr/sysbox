@@ -17,8 +17,6 @@ sysbox:
     echo "ListenStream=2222" >> /etc/systemd/system/ssh.socket.d/override.conf && \
     echo "StreamLocalBindUnlink yes" > /etc/ssh/sshd_config.d/gpg-agent.conf
 
-  RUN curl -fsSL https://tailscale.com/install.sh | sh
-  
   RUN cargo --locked install \
     zoxide \
     ripgrep \
@@ -47,6 +45,8 @@ sysbox:
     curl -o $HOME/.config/tmux/tmux.conf https://raw.githubusercontent.com/alexghr/nix/refactor/flake.parts/hosts/palpatine/ag/config/tmux.conf
 
   RUN echo 'source $HOME/.bashrc_extra' >> $HOME/.bashrc
+
+  RUN curl -L https://foundry.paradigm.xyz | bash
 
   # switch back to root so that systemd can start
   USER root
