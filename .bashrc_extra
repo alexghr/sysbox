@@ -14,7 +14,8 @@ function fixgpg() {
   gpgconf --launch gpg-agent
 }
 
-export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/.aztec/bin:$PATH"
+export CARGO_HOME="/opt/rust/cargo"
+export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$CARGO_HOME/bin:$HOME/.aztec/bin:$HOME/.foundry/bin:$PATH"
 
 eval "$(zoxide init --cmd cd bash)"
 eval "$(starship init bash)"
