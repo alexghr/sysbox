@@ -50,7 +50,7 @@ sysbox:
   RUN sudo chown -R ubuntu:ubuntu /opt/rust
   RUN rustup install stable && rustup default stable
   RUN curl -L https://foundry.paradigm.xyz | bash
-  RUN foundryup -b 25f24e677a6a32a62512ad4f561995589ac2c7dc
+  # RUN foundryup -b 25f24e677a6a32a62512ad4f561995589ac2c7dc
 
   WORKDIR /workspaces
   RUN rustup override set 1.74.1
