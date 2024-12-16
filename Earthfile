@@ -2,6 +2,9 @@ VERSION 0.8
 
 sysbox:
   ARG registry
+  ARG EARTHLY_GIT_HASH
+  ARG TARGETARCH
+
   FROM $registry/base-sysbox:latest
 
   RUN apt-get install -y --no-install-recommends \
@@ -83,10 +86,13 @@ sysbox:
   COPY --dir ./etc /
 
   WORKDIR /root
-  SAVE IMAGE --push $registry/sysbox:latest
+  SAVE IMAGE --push $registry/sysbox:$EARTHLY_GIT_HASH-$TARGETARCH
 
 base-sysbox:
   ARG registry
+  ARG EARTHLY_GIT_HASH
+  ARG TARGETARCH
+
   FROM github.com/AztecProtocol/aztec-packages/build-images+sysbox
   # save a copy of the base image
-  SAVE IMAGE --push $registry/base-sysbox:latest
+  SAVE IMAGE --push $registry/base-sysbox:$EARTHLY_GIT_HASH-$TARGETARCH
