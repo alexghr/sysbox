@@ -30,13 +30,14 @@ jobs:
           version: "0.8.9"
 
       - uses: actions/checkout@v4
-      
+
       - name: Build base sysbox
         run: |
           earthly --platform=linux/amd64 --ci --use-inline-cache --save-inline-cache --push +base-sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
 
   build-arm64:
     runs-on: ubuntu-24.04
+    timeout-minutes: 1440
     permissions:
       contents: read
       packages: write
@@ -89,3 +90,4 @@ jobs:
           docker buildx imagetools create -t $IMAGE:latest \
             $IMAGE:$GITHUB_SHA-amd64 \
             $IMAGE:$GITHUB_SHA-arm64
+
