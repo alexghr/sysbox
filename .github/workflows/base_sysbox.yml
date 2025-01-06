@@ -1,16 +1,9 @@
-name: Build sysbox
+name: Build base sysbox
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '0 0 * * 0' 
   workflow_dispatch:
-    inputs: {}
-  workflow_run:
-    workflows:
-      - Build base sysbox
-    types:
-      - completed
 
 env:
   REGISTRY: ghcr.io
@@ -18,7 +11,6 @@ env:
 jobs:
   build-amd64:
     runs-on: ubuntu-24.04
-    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
       packages: write
@@ -39,12 +31,13 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Build sysbox
+      - name: Build base sysbox
         run: |
-          earthly --platform=linux/amd64 --ci --use-inline-cache --save-inline-cache --push +sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
+          earthly --platform=linux/amd64 --ci --use-inline-cache --save-inline-cache --push +base-sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
 
   build-arm64:
     runs-on: ubuntu-24.04
+    timeout-minutes: 1440
     if: false
     permissions:
       contents: read
@@ -73,9 +66,9 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Build sysbox
+      - name: Build base sysbox
         run: |
-          earthly --platform=linux/arm64 --ci --use-inline-cache --save-inline-cache --push +sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
+          earthly --platform=linux/arm64 --ci --use-inline-cache --save-inline-cache --push +base-sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
 
   merge-platforms:
     runs-on: ubuntu-latest
@@ -94,6 +87,7 @@ jobs:
 
       - name: Create and push multi-arch manifest
         run: |
-          IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/sysbox"
+          IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/base-sysbox"
           docker buildx imagetools create -t $IMAGE:latest \
             $IMAGE:$GITHUB_SHA-amd64
+
