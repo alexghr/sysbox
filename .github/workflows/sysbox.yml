@@ -6,11 +6,6 @@ on:
       - main
   workflow_dispatch:
     inputs: {}
-  workflow_run:
-    workflows:
-      - Build base sysbox
-    types:
-      - completed
 
 env:
   REGISTRY: ghcr.io
