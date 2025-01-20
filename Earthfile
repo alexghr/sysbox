@@ -5,7 +5,7 @@ sysbox:
   ARG EARTHLY_GIT_HASH
   ARG TARGETARCH
 
-  FROM aztecprotocol/sysbox:2.1
+  FROM aztecprotocol/sysbox:3.0
 
   RUN apt-get install -y --no-install-recommends \
     bash-completion \
