@@ -17,5 +17,7 @@ function fixgpg() {
 export CARGO_HOME="/opt/rust/cargo"
 export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$CARGO_HOME/bin:$HOME/.aztec/bin:$HOME/.foundry/bin:$PATH"
 
+export NODE_NO_WARNINGS=2
+
 eval "$(zoxide init --cmd cd bash)"
 eval "$(starship init bash)"
