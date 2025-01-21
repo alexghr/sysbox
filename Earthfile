@@ -75,10 +75,9 @@ sysbox:
 
   # switch back to root so that systemd can start
   USER root
-  
-  # https://github.com/neovim/neovim/releases/latest
+
   WORKDIR /tmp
-  RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.10.2/nvim-linux64.tar.gz && \
+  RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.10.3/nvim-linux64.tar.gz && \
     mkdir -p /usr/local && \
     tar xzvf nvim-linux64.tar.gz -C /usr/local --strip-components 1 && \
     rm nvim-linux64.tar.gz
