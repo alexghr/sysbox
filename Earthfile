@@ -20,11 +20,12 @@ sysbox:
 
   RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && apt-get update -y && apt-get install google-cloud-cli -y && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt update && \
+    apt install -y --no-install-recommends \
       kubectl \
       google-cloud-cli \
-      google-cloud-cli-gke-gcloud-auth-plugin
+      google-cloud-cli-gke-gcloud-auth-plugin \
+      || true
 
   RUN mkdir -p /etc/systemd/system/ssh.socket.d && \
     echo "[Socket]" > /etc/systemd/system/ssh.socket.d/override.conf && \
@@ -43,6 +44,8 @@ sysbox:
     bat \
     eza \
     starship
+
+  RUN npm install -g eslint_d
 
   USER ubuntu
 
