@@ -71,7 +71,7 @@ sysbox:
   RUN echo 'source $HOME/.bashrc_extra' >> $HOME/.bashrc
 
   WORKDIR /workspaces
-  RUN rustup override set 1.74.1
+  RUN rustup override set 1.75
 
   # switch back to root so that systemd can start
   USER root
