@@ -39,7 +39,7 @@ jobs:
           earthly --platform=linux/amd64 --ci --use-inline-cache --save-inline-cache --push +sysbox --registry ${{ env.REGISTRY }}/${{ github.repository_owner }}
 
   build-arm64:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
       packages: write
@@ -57,13 +57,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           version: "0.8.9"
-
-      - name: Set up QEMU
-        id: qemu
-        uses: docker/setup-qemu-action@v1
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: arm64
 
       - uses: actions/checkout@v4
 
