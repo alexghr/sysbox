@@ -82,6 +82,4 @@ jobs:
       - name: Create and push multi-arch manifest
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/sysbox"
-          docker buildx imagetools create -t $IMAGE:latest \
-            $IMAGE:$GITHUB_SHA-amd64
-            $IMAGE:$GITHUB_SHA-arm64
+          docker buildx imagetools create -t $IMAGE:latest $IMAGE:$GITHUB_SHA-amd64 $IMAGE:$GITHUB_SHA-arm64
