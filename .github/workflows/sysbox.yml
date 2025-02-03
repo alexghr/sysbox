@@ -6,6 +6,8 @@ on:
       - main
   workflow_dispatch:
     inputs: {}
+  schedule:
+    - cron: "5 6 * * 1"
 
 env:
   REGISTRY: ghcr.io
@@ -13,7 +15,6 @@ env:
 jobs:
   build-amd64:
     runs-on: ubuntu-24.04
-    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
       packages: write
