@@ -77,10 +77,17 @@ sysbox:
   USER root
 
   WORKDIR /tmp
-  RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.10.3/nvim-linux64.tar.gz && \
-    mkdir -p /usr/local && \
-    tar xzvf nvim-linux64.tar.gz -C /usr/local --strip-components 1 && \
-    rm nvim-linux64.tar.gz
+  IF [ "$TARGETARCH" = "arm" ]
+    RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.10.4/nvim-linux-arm64.tar.gz && \
+      mkdir -p /usr/local && \
+      tar xzvf nvim-linux-arm64.tar.gz -C /usr/local --strip-components 1 && \
+      rm nvim-linux-arm64.tar.gz
+  ELSE
+    RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.10.4/nvim-linux-x86_64.tar.gz && \
+      mkdir -p /usr/local && \
+      tar xzvf nvim-linux-x86_64.tar.gz -C /usr/local --strip-components 1 && \
+      rm nvim-linux-x86_64.tar.gz
+  END
 
   WORKDIR /usr/local
   RUN curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
